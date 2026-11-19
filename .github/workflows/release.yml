@@ -17,7 +17,7 @@ jobs:
     outputs:
       version: ${{ steps.v.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: v
         run: |
           version="${GITHUB_REF_NAME#v}"
@@ -41,7 +41,7 @@ jobs:
     env:
       VERSION: ${{ needs.check-version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build dependencies
         run: sudo apt-get update && sudo apt-get install -y libclang-dev libxkbcommon-dev libwayland-dev
       - uses: dtolnay/rust-toolchain@stable
@@ -74,7 +74,7 @@ jobs:
     env:
       VERSION: ${{ needs.check-version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - run: cargo build --release --locked -p scopeview
@@ -102,7 +102,7 @@ jobs:
     env:
       VERSION: ${{ needs.check-version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-apple-darwin,x86_64-apple-darwin
@@ -127,7 +127,7 @@ jobs:
       VERSION: ${{ needs.check-version.outputs.version }}
       GH_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/download-artifact@v4
         with:
           path: dist
