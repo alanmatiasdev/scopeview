@@ -1,0 +1,11 @@
+# Rust build output.
+/target/
+
+# Editor and operating-system metadata.
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Runtime diagnostics.
+*.log

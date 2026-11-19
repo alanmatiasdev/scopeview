@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Name=ScopeView
+GenericName=USB microscope viewer
+Comment=View and measure with a USB microscope
+Comment[pt_BR]=Visualize e meça com um microscópio USB
+Comment[es]=Visualice y mida con un microscopio USB
+Comment[fr]=Visualisez et mesurez avec un microscope USB
+Comment[de]=Mit einem USB-Mikroskop betrachten und messen
+Comment[it]=Visualizza e misura con un microscopio USB
+Exec=scopeview
+Icon=io.github.alanmatiasdev.ScopeView
+Terminal=false
+Categories=Graphics;Viewer;
+Keywords=microscope;camera;measure;calibration;uvc;
+StartupWMClass=scopeview

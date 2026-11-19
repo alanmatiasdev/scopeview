@@ -1,0 +1,39 @@
+[workspace]
+members = ["crates/core", "crates/camera", "crates/i18n", "crates/imaging", "crates/record", "crates/app"]
+resolver = "2"
+
+[workspace.package]
+version = "1.0.0"
+edition = "2021"
+authors = ["Alan Matias"]
+license = "GPL-3.0-or-later"
+homepage = "https://github.com/alanmatiasdev/scopeview"
+repository = "https://github.com/alanmatiasdev/scopeview"
+rust-version = "1.95"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+
+# JPEG decoding is unusably slow unoptimized; keep `cargo run` usable for the live view.
+[profile.dev.package.image]
+opt-level = 3
+
+[profile.dev.package.zune-jpeg]
+opt-level = 3
+
+# The raw-format converters run on every frame; unoptimized they cannot keep up with the camera.
+[profile.dev.package.nokhwa]
+opt-level = 3
+
+[profile.dev.package.nokhwa-core]
+opt-level = 3
+
+[profile.dev.package.nokhwa-bindings-linux]
+opt-level = 3
+
+# The converters are generic, so they are compiled into this crate.
+[profile.dev.package.scopeview-camera]
+opt-level = 3

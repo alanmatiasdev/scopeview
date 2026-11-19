@@ -1,0 +1,19 @@
+[package]
+name = "scopeview-camera"
+description = "Camera enumeration and frame streaming for ScopeView"
+version.workspace = true
+authors.workspace = true
+homepage.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+# `decoding` is off on purpose: it pulls in mozjpeg (C build). MJPEG is decoded with `image`.
+nokhwa = { version = "0.10", default-features = false, features = ["input-native"] }
+image = { version = "0.25", default-features = false, features = ["jpeg"] }
+thiserror = "2"
+
+[lints]
+workspace = true

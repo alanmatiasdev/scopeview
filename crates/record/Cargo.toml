@@ -1,0 +1,19 @@
+[package]
+name = "scopeview-record"
+description = "MJPEG-in-AVI video recording for ScopeView"
+version.workspace = true
+authors.workspace = true
+homepage.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+scopeview-core = { path = "../core" }
+scopeview-imaging = { path = "../imaging" }
+image = { version = "0.25", default-features = false, features = ["jpeg"] }
+thiserror = "2"
+
+[lints]
+workspace = true
