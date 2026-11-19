@@ -1,0 +1,21 @@
+[package]
+name = "scopeview-imaging"
+description = "Overlay rasterization and photo saving for ScopeView"
+version.workspace = true
+authors.workspace = true
+homepage.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+scopeview-core = { path = "../core" }
+image = { version = "0.25", default-features = false, features = ["jpeg", "png", "bmp"] }
+ab_glyph = "0.2"
+# Same font egui uses on screen (Ubuntu Light), so labels look alike in photos.
+epaint_default_fonts = "0.37"
+thiserror = "2"
+
+[lints]
+workspace = true

@@ -1,0 +1,161 @@
+name: Release
+
+# Push a tag like v1.0.0 (see docs/releasing.md) to build and publish a GitHub release.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          crate=$(grep -m1 '^version' Cargo.toml | cut -d'"' -f2)
+          if [ "$version" != "$crate" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match the Cargo.toml version $crate" >&2
+            exit 1
+          fi
+          grep -q "^## \[$version\]" CHANGELOG.md || { echo "CHANGELOG.md has no entry for $version" >&2; exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  linux:
+    needs: check-version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: ubuntu-22.04, arch: x86_64, deb_arch: amd64 }
+          - { runner: ubuntu-22.04-arm, arch: aarch64, deb_arch: arm64 }
+    runs-on: ${{ matrix.runner }}
+    env:
+      VERSION: ${{ needs.check-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libclang-dev libxkbcommon-dev libwayland-dev
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deb,cargo-generate-rpm
+      - run: cargo build --release --locked -p scopeview
+      - name: Package
+        run: |
+          mkdir dist
+          name="scopeview-${VERSION}-${{ matrix.arch }}-linux"
+          mkdir -p "$name/share"
+          cp target/release/scopeview LICENSE README.md packaging/linux/install.sh "$name/"
+          cp packaging/linux/io.github.alanmatiasdev.ScopeView.desktop \
+             packaging/linux/io.github.alanmatiasdev.ScopeView.metainfo.xml \
+             assets/icon/scopeview.svg "$name/share/"
+          cp assets/icon/scopeview-256.png "$name/share/io.github.alanmatiasdev.ScopeView.png"
+          tar czf "dist/$name.tar.gz" "$name"
+          cargo deb -p scopeview --no-build --output "dist/scopeview_${VERSION}_${{ matrix.deb_arch }}.deb"
+          cargo generate-rpm -p crates/app --output "dist/scopeview-${VERSION}-1.${{ matrix.arch }}.rpm"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-${{ matrix.arch }}
+          path: dist/*
+
+  windows:
+    needs: check-version
+    runs-on: windows-latest
+    env:
+      VERSION: ${{ needs.check-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo build --release --locked -p scopeview
+      - name: Portable zip
+        shell: bash
+        run: |
+          mkdir dist
+          name="scopeview-${VERSION}-x86_64-windows"
+          mkdir "$name"
+          cp target/release/scopeview.exe LICENSE README.md "$name/"
+          7z a "dist/$name.zip" "$name"
+      - name: Installer
+        shell: pwsh
+        run: |
+          choco install innosetup --no-progress -y
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$env:VERSION" packaging\windows\scopeview.iss
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/*
+
+  macos:
+    needs: check-version
+    runs-on: macos-latest
+    env:
+      VERSION: ${{ needs.check-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+      - run: |
+          cargo build --release --locked -p scopeview --target aarch64-apple-darwin
+          cargo build --release --locked -p scopeview --target x86_64-apple-darwin
+      - name: Disk image
+        run: |
+          packaging/macos/build-dmg.sh "$VERSION" \
+            target/aarch64-apple-darwin/release/scopeview \
+            target/x86_64-apple-darwin/release/scopeview
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: dist/*
+
+  publish:
+    needs: [check-version, linux, windows, macos]
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.check-version.outputs.version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Checksums and notes
+        run: |
+          (cd dist && sha256sum * > SHA256SUMS && cat SHA256SUMS)
+          awk -v v="$VERSION" '
+            $0 ~ "^## \\[" v "\\]" { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > notes.md
+          cat >> notes.md <<'NOTES'
+
+          ## Installing
+
+          - **Windows:** run `scopeview-*-setup.exe`, or unzip the portable `.zip`. The files are not code signed, so SmartScreen may ask you to choose "More info" > "Run anyway".
+          - **macOS:** open the `.dmg` and drag ScopeView to Applications. The app is not notarized: the first time, right-click it and choose Open.
+          - **Debian, Ubuntu:** `sudo apt install ./scopeview_*.deb`
+          - **Fedora, openSUSE:** `sudo dnf install ./scopeview-*.rpm`
+          - **Arch, Manjaro and others:** extract the `.tar.gz` and run `./install.sh` (or `sudo ./install.sh /usr/local`).
+
+          On Linux your user must be in the `video` group to open the camera. Verify downloads with `SHA256SUMS`.
+          NOTES
+      - name: Create release
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "ScopeView $VERSION" \
+            --notes-file notes.md \
+            --verify-tag

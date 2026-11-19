@@ -1,0 +1,18 @@
+[package]
+name = "scopeview-i18n"
+description = "Fluent-based translation layer for ScopeView"
+version.workspace = true
+authors.workspace = true
+homepage.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+fluent-bundle = "0.16"
+unic-langid = "0.9"
+sys-locale = "0.3"
+
+[lints]
+workspace = true

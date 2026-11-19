@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.alanmatiasdev.ScopeView</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>ScopeView</name>
+  <developer id="io.github.alanmatiasdev">
+    <name>Alan Matias</name>
+  </developer>
+  <summary>View and measure with a USB microscope</summary>
+  <summary xml:lang="pt-BR">Visualize e meça com um microscópio USB</summary>
+  <summary xml:lang="es">Visualice y mida con un microscopio USB</summary>
+  <summary xml:lang="fr">Visualisez et mesurez avec un microscope USB</summary>
+  <summary xml:lang="de">Mit einem USB-Mikroskop betrachten und messen</summary>
+  <summary xml:lang="it">Visualizza e misura con un microscopio USB</summary>
+  <description>
+    <p>
+      ScopeView shows the live image of a USB microscope or any UVC camera and lets you measure
+      what you see.
+    </p>
+    <ul>
+      <li>Calibrate against a reference ruler and keep several calibrations, one per lens or zoom level</li>
+      <li>Measure lines, parallel lines, angles, rectangles and circles, and add a crosshair with ruler ticks</li>
+      <li>Add text notes and freehand drawings</li>
+      <li>Save photos as JPEG, PNG or BMP with the measurements burned in, and record video</li>
+      <li>Adjust camera controls, flip the image and switch between image modes</li>
+      <li>Available in English, Portuguese, Spanish, French, German and Italian, with keyboard shortcuts and a high-contrast theme</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">io.github.alanmatiasdev.ScopeView.desktop</launchable>
+  <icon type="stock">io.github.alanmatiasdev.ScopeView</icon>
+  <url type="homepage">https://github.com/alanmatiasdev/scopeview</url>
+  <url type="bugtracker">https://github.com/alanmatiasdev/scopeview/issues</url>
+  <provides>
+    <binary>scopeview</binary>
+  </provides>
+  <categories>
+    <category>Graphics</category>
+    <category>Science</category>
+    <category>Education</category>
+  </categories>
+  <keywords>
+    <keyword>microscope</keyword>
+    <keyword>camera</keyword>
+    <keyword>measurement</keyword>
+  </keywords>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+  <recommends>
+    <display_length compare="ge">640</display_length>
+  </recommends>
+  <requires>
+    <internet>offline-only</internet>
+  </requires>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="1.0.0" date="2026-11-19">
+      <description>
+        <p>First stable release: calibration and measurement tools, photos and video recording, six
+        interface languages, keyboard shortcuts and a high-contrast theme.</p>
+      </description>
+    </release>
+  </releases>
+</component>

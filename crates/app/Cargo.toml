@@ -1,0 +1,67 @@
+[package]
+name = "scopeview"
+description = "ScopeView: viewer and measurement tool for USB microscopes"
+version.workspace = true
+authors.workspace = true
+homepage.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+scopeview-camera = { path = "../camera" }
+scopeview-core = { path = "../core" }
+scopeview-i18n = { path = "../i18n" }
+scopeview-imaging = { path = "../imaging" }
+scopeview-record = { path = "../record" }
+eframe = "0.37"
+image = { version = "0.25", default-features = false }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+directories = "6"
+
+[target.'cfg(windows)'.build-dependencies]
+winresource = "0.1"
+
+[lints]
+workspace = true
+
+[package.metadata.deb]
+name = "scopeview"
+maintainer = "Alan Matias <alanmatiasdev@users.noreply.github.com>"
+copyright = "Alan Matias"
+license-file = ["../../LICENSE", "0"]
+section = "graphics"
+priority = "optional"
+extended-description = """\
+ScopeView shows the live image of a USB microscope or any UVC camera and lets you calibrate \
+against a reference ruler, measure lines, angles, rectangles and circles, add notes, take photos \
+and record video."""
+depends = "$auto"
+recommends = "libgl1, libxkbcommon0"
+assets = [
+    ["target/release/scopeview", "usr/bin/", "755"],
+    ["../../packaging/linux/io.github.alanmatiasdev.ScopeView.desktop", "usr/share/applications/", "644"],
+    ["../../packaging/linux/io.github.alanmatiasdev.ScopeView.metainfo.xml", "usr/share/metainfo/", "644"],
+    ["../../assets/icon/scopeview.svg", "usr/share/icons/hicolor/scalable/apps/io.github.alanmatiasdev.ScopeView.svg", "644"],
+    ["../../assets/icon/scopeview-48.png", "usr/share/icons/hicolor/48x48/apps/io.github.alanmatiasdev.ScopeView.png", "644"],
+    ["../../assets/icon/scopeview-128.png", "usr/share/icons/hicolor/128x128/apps/io.github.alanmatiasdev.ScopeView.png", "644"],
+    ["../../assets/icon/scopeview-256.png", "usr/share/icons/hicolor/256x256/apps/io.github.alanmatiasdev.ScopeView.png", "644"],
+    ["../../README.md", "usr/share/doc/scopeview/README.md", "644"],
+]
+
+[package.metadata.generate-rpm]
+name = "scopeview"
+summary = "Viewer and measurement tool for USB microscopes"
+license = "GPL-3.0-or-later"
+url = "https://github.com/alanmatiasdev/scopeview"
+assets = [
+    { source = "target/release/scopeview", dest = "/usr/bin/scopeview", mode = "755" },
+    { source = "packaging/linux/io.github.alanmatiasdev.ScopeView.desktop", dest = "/usr/share/applications/io.github.alanmatiasdev.ScopeView.desktop", mode = "644" },
+    { source = "packaging/linux/io.github.alanmatiasdev.ScopeView.metainfo.xml", dest = "/usr/share/metainfo/io.github.alanmatiasdev.ScopeView.metainfo.xml", mode = "644" },
+    { source = "assets/icon/scopeview.svg", dest = "/usr/share/icons/hicolor/scalable/apps/io.github.alanmatiasdev.ScopeView.svg", mode = "644" },
+    { source = "assets/icon/scopeview-48.png", dest = "/usr/share/icons/hicolor/48x48/apps/io.github.alanmatiasdev.ScopeView.png", mode = "644" },
+    { source = "assets/icon/scopeview-128.png", dest = "/usr/share/icons/hicolor/128x128/apps/io.github.alanmatiasdev.ScopeView.png", mode = "644" },
+    { source = "assets/icon/scopeview-256.png", dest = "/usr/share/icons/hicolor/256x256/apps/io.github.alanmatiasdev.ScopeView.png", mode = "644" },
+    { source = "LICENSE", dest = "/usr/share/licenses/scopeview/LICENSE", mode = "644", doc = true },
+]
