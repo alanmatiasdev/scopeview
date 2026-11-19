@@ -63,7 +63,7 @@ jobs:
           tar czf "dist/$name.tar.gz" "$name"
           cargo deb -p scopeview --no-build --output "dist/scopeview_${VERSION}_${{ matrix.deb_arch }}.deb"
           cargo generate-rpm -p crates/app --output "dist/scopeview-${VERSION}-1.${{ matrix.arch }}.rpm"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: linux-${{ matrix.arch }}
           path: dist/*
@@ -91,7 +91,7 @@ jobs:
         run: |
           choco install innosetup --no-progress -y
           & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$env:VERSION" packaging\windows\scopeview.iss
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: windows
           path: dist/*
@@ -115,7 +115,7 @@ jobs:
           packaging/macos/build-dmg.sh "$VERSION" \
             target/aarch64-apple-darwin/release/scopeview \
             target/x86_64-apple-darwin/release/scopeview
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: macos
           path: dist/*
